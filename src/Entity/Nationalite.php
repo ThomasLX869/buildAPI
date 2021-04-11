@@ -80,4 +80,8 @@ class Nationalite
 
         return $this;
     }
+
+    public function __toString() {
+        return (string) $this->libelle;
+    }
 }
