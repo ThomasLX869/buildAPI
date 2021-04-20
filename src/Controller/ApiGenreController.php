@@ -71,7 +71,6 @@ class ApiGenreController extends AbstractController
             true);
     }
 
-
     /**
      * @Route("/api/genres/{id}", name="api_genres_update", methods={"PUT"})
      */
@@ -84,5 +83,17 @@ class ApiGenreController extends AbstractController
         $em->flush();
 
         return new JsonResponse("Mise à jour effectuée", Response::HTTP_OK, [], true);
+    }
+
+    /**
+     * @Route("/api/genres/{id}", name="api_genres_delete", methods={"DELETE"})
+     */
+    public function delete(Genre $genre)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($genre);
+        $em->flush();
+
+        return new JsonResponse("Le genre a été supprimé", Response::HTTP_OK, []);
     }
 }
