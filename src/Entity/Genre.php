@@ -17,19 +17,20 @@ class Genre
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups ({"listGenreSimple", "listGenreFull"})
+     * @Groups({"listGenreSimple","listGenreFull"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups ({"listGenreSimple", "listGenreFull"})
+     * @Groups({"listGenreSimple", "listGenreFull"})
      */
     private $libelle;
 
     /**
      * @ORM\OneToMany(targetEntity=Livre::class, mappedBy="genre")
-     * Groups ({"ListGenreFull"})
+     * @Groups({"listGenreFull"})
+
      */
     private $livres;
 
