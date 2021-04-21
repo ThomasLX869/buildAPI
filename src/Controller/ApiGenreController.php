@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ApiGenreController extends AbstractController
 {
@@ -26,7 +27,7 @@ class ApiGenreController extends AbstractController
             $genresObject,
             'json',
             [
-                'groups'=>'listGenreFull'
+                'groups' => 'listGenreFull'
             ]
         );
         return new JsonResponse($result, 200, [], true);
@@ -41,7 +42,7 @@ class ApiGenreController extends AbstractController
             $genre,
             'json',
             [
-                'groups'=>'listGenreSimple'
+                'groups' => 'listGenreSimple'
                 //'groups'=>'listGenreFull'
             ]
         );
@@ -52,16 +53,21 @@ class ApiGenreController extends AbstractController
     /**
      * @Route("/api/genres", name="api_genres_create", methods={"POST"})
      */
-    public function create(SerializerInterface $serializer, Request $request)
+    public function create(SerializerInterface $serializer, Request $request, ValidatorInterface $validator)
     {
         $data = $request->getContent();
         $em = $this->getDoctrine()->getManager();
-        $genre = new Genre();
 
         $genre = $serializer->deserialize($data, Genre::class, 'json');
+
+        // Gestion des erreurs de validation
+        $errors = $validator->validate($genre);
+        if (count($errors) > 0) {
+            $errorsJson = $serializer->serialize($errors, 'json');
+            return new JsonResponse($errorsJson, Response::HTTP_BAD_REQUEST, [], true);
+        }
         $em->persist($genre);
         $em->flush();
-
         return new JsonResponse("Le genre a bien été créé", Response::HTTP_CREATED,
 //            ['location' => "api/genres/".$genre->getId()],
             ['location' => $this->generateUrl(
@@ -74,11 +80,20 @@ class ApiGenreController extends AbstractController
     /**
      * @Route("/api/genres/{id}", name="api_genres_update", methods={"PUT"})
      */
-    public function edit(SerializerInterface $serializer, Genre $genre, Request $request)
+    public function edit(SerializerInterface $serializer, Genre $genre, Request $request, ValidatorInterface $validator)
     {
         $em = $this->getDoctrine()->getManager();
         $data = $request->getContent();
-        $serializer->deserialize($data, Genre::class,'json', ['object_to_populate'=>$genre]);
+        $genre = $serializer->deserialize($data, Genre::class, 'json', ['object_to_populate' => $genre]);
+
+        // Gestion des erreurs
+        $errors = $validator->validate($genre);
+        if (count($errors) > 0) {
+            $errorsJson = $serializer->serialize($errors, 'json');
+            return new JsonResponse($errorsJson, Response::HTTP_BAD_REQUEST, [], true);
+        }
+
+
         $em->persist($genre);
         $em->flush();
 
