@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass=GenreRepository::class)
  * @UniqueEntity(
  *     fields={"libelle"},
- *     message="Un genre est déjà existant avec ce nom. Veuillez saisir un autre libelle"
+ *     message="Un genre est déjà existant pour  {{ value }}. Veuillez saisir un autre libelle."
  * )
  */
 class Genre
